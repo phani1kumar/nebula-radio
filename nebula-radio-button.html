@@ -24,7 +24,7 @@ The following demonstrates the element with some common properties and events:
   value="on"
   checked="{{checked}}"
   on-change="_onChange">
-</nebula-radio>
+</nebula-radio-button>
 ```
 
 The display of the radio button is defined by the `icon` and `checkedIcon` properties. Standard radio button icons are included with the control, but can be customized by providing the `id` for any icon in an iconset database defined using [iron-iconset](https://www.webcomponents.org/element/PolymerElements/iron-iconset) or [iron-iconset-svg](https://www.webcomponents.org/element/PolymerElements/iron-iconset-svg).
@@ -32,11 +32,8 @@ The display of the radio button is defined by the `icon` and `checkedIcon` prope
 ```html
 <nebula-radio-button
   icon="icons:favorite-border"
-  checked-icon="icons:favorite"
-  value="on"
-  checked="{{checked}}"
-  on-change="_onChange">
-</nebula-radio>
+  checked-icon="icons:favorite">
+</nebula-radio-button>
 ```
 
 ## Style
@@ -56,7 +53,7 @@ The following CSS properties and mixins are available for styling.
 
 Custom property | Description | Default
 :--- | :--- | :---
-`--nebula-radio-button-color` | The theme color for the element. | teal
+`--nebula-radio-button-color` | The theme color for the element. | inherit
 `--nebula-radio-button-size` | The theme size (height and width) of the element. | 1rem
 `--nebula-radio-button` | Mixin applied to base element.
 `--nebula-radio-button-icon` | Mixin applied to icon container.
@@ -81,12 +78,18 @@ For convenience, you can also apply a theme to the element using the following s
   <template>
     <style>
       :host {
-        --nebula-radio-button-color: teal;
+        --nebula-radio-button-color: inherit;
         --nebula-radio-button-size: 1.0rem;
-        --nebula-radio-box-shadow: 0px 0px 1px 1px var(--nebula-radio-button-color);
         display: inline-block;
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
+        border: 0;
         outline: 0;
-        box-sizing: border-box;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
         @apply --layout-horizontal;
         @apply --layout-center;
         @apply --layout-inline;
@@ -96,13 +99,11 @@ For convenience, you can also apply a theme to the element using the following s
         position: relative;
         height: var(--nebula-radio-button-size);
         width: var(--nebula-radio-button-size);
-        background-color: transparent;
         color: var(--nebula-radio-button-color);
         margin: 0;
         padding: 0;
         border: 0;
         border-radius: 2px;
-        cursor: pointer;
         @apply --nebula-radio-button-icon;
       }
       #icon > * {
@@ -130,9 +131,7 @@ For convenience, you can also apply a theme to the element using the following s
       }
       :host([focusmode=key]:focus) > #icon,
       :host([focusmode=mouse]):hover > #icon {
-        -webkit-box-shadow: var(--nebula-radio-box-shadow);
-        -moz-box-shadow: var(--nebula-radio-box-shadow);
-        box-shadow: var(--nebula-radio-box-shadow);
+        box-shadow: 0px 0px 1px 1px var(--nebula-radio-button-color);
         @apply --nebula-radio-button-focus;
       }
       :host([disabled]) {

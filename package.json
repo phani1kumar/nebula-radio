@@ -1,6 +1,6 @@
 {
   "name": "nebula-radio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A web component to display a group of radio buttons.",
   "license": "ISC",
   "author": "Chris Beckett <chrisb@arsnebula.com>",
