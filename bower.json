@@ -1,0 +1,43 @@
+{
+  "name": "nebula-radio",
+  "description": "A web component to display a group of radio buttons.",
+  "license": "ISC",
+  "authors": [
+    "Chris Beckett <chrisb@arsnebula.com>"
+  ],
+  "homepage": "https://github.com/arsnebula/nebula-radio#README",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "keywords": [
+    "polymer",
+    "webcomponent",
+    "web component",
+    "webcomponents",
+    "web-components",
+    "control",
+    "web-control",
+    "radio",
+    "radio-group"
+  ],
+  "main": "nebula-radio.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.7.1",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.3.1",
+    "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^1.1.0",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.12",
+    "nebula-focus-behavior": "arsnebula/nebula-focus-behavior#~1.1.3",
+    "nebula-style-attributes-behavior": "arsnebula/nebula-style-attributes-behavior#~1.1.1",
+    "nebula-checked-behavior": "arsnebula/nebula-checked-behavior#~1.0.2"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
+    "web-component-tester": "Polymer/web-component-tester#^5.0.0",
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#^1.4.0"
+  }
+}

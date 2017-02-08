@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>nebula-radio</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
+    <link rel="import" href="../nebula-radio.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <nebula-radio-group direction="vertical" value="{{value}}">
+          <nebula-radio-button value="grape" hidden>Grape</nebula-radio-button>
+          <nebula-radio-button value="banana">Banana</nebula-radio-button>
+          <nebula-radio-button value="orange" checked>Orange</nebula-radio-button>
+          <nebula-radio-button value="pear" disabled>Pear</nebula-radio-button>
+          <nebula-radio-button value="apple">Apple</nebula-radio-button>
+        </nebula-radio-group>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('basic', function() {
+        var el
+        setup(function() {
+          el = fixture('basic')
+        })
+        test('element is created', function() {
+          assert.equal(el.is, 'nebula-radio-group')
+        })
+        test('default value is orange', function() {
+          assert.equal(el.value, 'orange')
+        })
+      })
+    </script>
+  </body>
+</html>

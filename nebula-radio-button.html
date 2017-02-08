@@ -1,0 +1,201 @@
+<!--
+@license
+Copyright (c) 2017 Ars Nebula LLC.
+This code may be used under the terms found in LICENSE.md of this repository.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../nebula-focus-behavior/nebula-focus-behavior.html">
+<link rel="import" href="../nebula-style-attributes-behavior/nebula-style-attributes-behavior.html">
+<link rel="import" href="../nebula-checked-behavior/nebula-checked-behavior.html">
+
+<!--
+`<nebula-radio>` is a web component to display a radio button.
+
+## Usage
+
+The following demonstrates the element with some common properties and events:
+
+```html
+<nebula-radio-button
+  value="on"
+  checked="{{checked}}"
+  on-change="_onChange">
+</nebula-radio>
+```
+
+The display of the radio button is defined by the `icon` and `checkedIcon` properties. Standard radio button icons are included with the control, but can be customized by providing the `id` for any icon in an iconset database defined using [iron-iconset](https://www.webcomponents.org/element/PolymerElements/iron-iconset) or [iron-iconset-svg](https://www.webcomponents.org/element/PolymerElements/iron-iconset-svg).
+
+```html
+<nebula-radio-button
+  icon="icons:favorite-border"
+  checked-icon="icons:favorite"
+  value="on"
+  checked="{{checked}}"
+  on-change="_onChange">
+</nebula-radio>
+```
+
+## Style
+
+The preferred approach to styling the element is using CSS custom properties and mixins.
+
+```css
+:host {
+  --nebula-radio-button-color darkred;
+  --nebula-radio-button-icon: {
+    color: dimgrey;
+  }
+}
+```
+
+The following CSS properties and mixins are available for styling.
+
+Custom property | Description | Default
+:--- | :--- | :---
+`--nebula-radio-button-color` | The theme color for the element. | teal
+`--nebula-radio-button-size` | The theme size (height and width) of the element. | 1rem
+`--nebula-radio-button` | Mixin applied to base element.
+`--nebula-radio-button-icon` | Mixin applied to icon container.
+`--nebula-radio-button-focus` | Mixin applied to element when focused.
+`--nebula-radio-button-disabled` | Mixin applied to element when disabled.
+
+For convenience, you can also apply a theme to the element using the following style attributes:
+
+- `color`
+- `size`
+
+```html
+<nebula-radio-button color="teal" size="1rem">
+  My Radio Button
+</nebula-radio-button>
+```
+
+@demo demo/index.html
+-->
+
+<dom-module id="nebula-radio-button">
+  <template>
+    <style>
+      :host {
+        --nebula-radio-button-color: teal;
+        --nebula-radio-button-size: 1.0rem;
+        --nebula-radio-box-shadow: 0px 0px 1px 1px var(--nebula-radio-button-color);
+        display: inline-block;
+        outline: 0;
+        box-sizing: border-box;
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-inline;
+        @apply --nebula-radio-button;
+      }
+      #icon {
+        position: relative;
+        height: var(--nebula-radio-button-size);
+        width: var(--nebula-radio-button-size);
+        background-color: transparent;
+        color: var(--nebula-radio-button-color);
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 2px;
+        cursor: pointer;
+        @apply --nebula-radio-button-icon;
+      }
+      #icon > * {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+      #checked {
+        visibility: hidden;
+      }
+      :host([checked]) #checked {
+        visibility: visible;
+      }
+      #unchecked {
+        visibility: visible;
+      }
+      :host([checked]) #unchecked {
+        visibility: hidden;
+      }
+      #label {
+        margin-left: 4px;
+      }
+      #label:empty {
+        display: none;
+      }
+      :host([focusmode=key]:focus) > #icon,
+      :host([focusmode=mouse]):hover > #icon {
+        -webkit-box-shadow: var(--nebula-radio-box-shadow);
+        -moz-box-shadow: var(--nebula-radio-box-shadow);
+        box-shadow: var(--nebula-radio-box-shadow);
+        @apply --nebula-radio-button-focus;
+      }
+      :host([disabled]) {
+        pointer-events: none !important;
+        cursor: default !important;
+        opacity: 0.6 !important;
+        @apply --nebula-radio-button-disabled;
+      }
+    </style>
+    <iron-iconset-svg size="24" name="nebula-radio-button">
+      <svg>
+        <defs>
+          <g id="checked"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></g>
+          <g id="unchecked"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></g>
+        </defs>
+      </svg>
+    </iron-iconset-svg>
+    <div id="icon">
+      <iron-icon id="unchecked" icon="[[icon]]"></iron-icon>
+      <iron-icon id="checked" icon="[[checkedIcon]]"></iron-icon>
+    </div>
+    <span id="label">
+      <slot id="content"></slot>
+    </span>
+  </template>
+  <script>
+    Polymer({
+      /**
+      * Event triggered when the value of the checked property is changed.
+      * @event change
+      */
+      is: 'nebula-radio-button',
+      behaviors: [
+        Nebula.FocusBehavior,
+        Nebula.StyleAttributesBehavior,
+        Nebula.CheckedBehavior
+      ],
+      hostAttributes: {
+        'role': 'radio'
+      },
+      /**
+      * Map of theme style attributes that can be used to update CSS variables.
+      */
+      _styleAttributes: {
+        'color': '--nebula-radio-button-color',
+        'size': '--nebula-radio-button-size'
+      },
+      properties: {
+        /**
+        * The default icon to display when the element is not checked.
+        */
+        icon: {
+          type: String,
+          value: 'nebula-radio-button:unchecked'
+        },
+        /**
+        * The icon to display when the element is checked.
+        */
+        checkedIcon: {
+          type: String,
+          value: 'nebula-radio-button:checked'
+        }
+      }
+    })
+  </script>
+</dom-module>

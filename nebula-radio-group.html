@@ -1,0 +1,271 @@
+<!--
+@license
+Copyright (c) 2017 Ars Nebula LLC.
+This code may be used under the terms found in LICENSE.md of this repository.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="nebula-radio-button.html">
+
+<!--
+`<nebula-radio-group>` is a web component to manage a group a radio buttons.
+
+The element enforces group behavior such as ensuring that one, and only one option in the group is selected. If no initial radio button is checked, it will automatically select the first eligible radio button. Hidden and disabled radio buttons can be included, but will be ignored from selection.
+
+The element implements keyboard navigation behavior defined in the [WAI-ARIA Authoring Practices](https://www.w3.org/TR/wai-aria-practices-1.1/#radiobutton). The element uses a *roving index* strategy for navigation within the group, so any `tabindex` set on an individual radio button will be modified as necessary.
+
+The container supports vertical and horizontal layout using the `direction` property.
+
+The element proxies the value from the currently selected radio button.
+
+## Usage
+
+The following demonstrates the element with some common properties and events:
+
+```html
+<nebula-radio-group direction="vertical" value="{{radioGroupValue}}">
+  <nebula-radio-button value="orange" checked>Orange</nebula-radio-button>
+  <nebula-radio-button value="banana">Banana</nebula-radio-button>
+  <nebula-radio-button value="apple">Apple</nebula-radio-button>
+</nebula-radio-group>
+```
+
+@demo demo/index.html
+-->
+
+<dom-module id="nebula-radio-group">
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: fit-content;
+        height: fit-content;
+        @apply --layout-around-justified;
+      }
+      :host([direction=horizontal]) {
+        @apply --layout-horizontal
+      }
+      :host([direction=horizontal]) ::slotted(*) {
+        margin: 0 4px;
+      }
+      :host([direction=vertical]) {
+        @apply --layout-vertical;
+      }
+      :host([direction=vertical]) ::slotted(*) {
+        margin: 4px 0;
+      }
+      :host ::slotted(*) {
+        @apply --layout-flex-none;
+      }
+      :host {
+        @apply --nebula-radio-group;
+      }
+    </style>
+    <slot id="content"></slot>
+  </template>
+  <script>
+  (function() {
+    var KEY_DOWN = 40
+    var KEY_UP = 38
+    var KEY_LEFT = 37
+    var KEY_RIGHT = 39
+
+    Polymer({
+      /**
+      * Event raised when a child radio button is selected.
+      * The event does not bubble.
+      * @event selected
+      */
+      is: 'nebula-radio-group',
+      hostAttributes: {
+        'role': 'radiogroup'
+      },
+      properties: {
+        /**
+        * The flex direction of the container.
+        * Accepted values are `horizontal` and `vertical`.
+        */
+        direction: {
+          type: String,
+          reflectToAttribute: true,
+          notify: true,
+          value: 'horizontal'
+        },
+        /**
+        * The index of the selected child radio button element.
+        * This value determined automatically.
+        */
+        selected: {
+          type: Number,
+          reflectToAttribute: true,
+          notify: true,
+          readOnly: true
+        },
+        /**
+        * The value of the selected child radio button element.
+        */
+        value: {
+          type: String,
+          notify: true,
+          computed: '_computeValue(selected)'
+        }
+      },
+      observers: [
+        '_onSelectedChanged(selected)'
+      ],
+      listeners: {
+        'keydown': '_onKeyDown',
+        'change': '_onChange',
+        'focusin': '_onFocusIn',
+        'focusout': '_onFocusOut'
+      },
+      /**
+      * Event lifecycle handler triggered when element is attached to the DOM.
+      */
+      attached: function() {
+        this.items = this.getEffectiveChildren()
+        this._selectInitial()
+      },
+      /**
+      * Computed property handler that returns the value of the currently selected child node.
+      */
+      _computeValue: function(selected) {
+        if (!(this.items && this.items.length > 0)) return
+        return this.items[selected].value
+      },
+      /**
+      * Event handler triggered when a child node has focus.
+      */
+      _onFocusIn: function(e) {
+        this._isFocusEnabled = true
+      },
+      /**
+      * Event handler triggered when a child node loses focus.
+      */
+      _onFocusOut: function(e) {
+        this._isFocusEnabled = false
+      },
+      /**
+      * Event handler triggered when a child node is changed.
+      * If applicable, changes the currently selected node to the changed node.
+      */
+      _onChange: function(e) {
+        var target = Polymer.dom(e).localTarget
+
+        // if the target is the current selected item, and unchecked
+        // then check it again (cannot deselect)
+        if (!target.checked && target === this.items[this.selected]) {
+          target.set('checked', true)
+          e.preventDefault()
+          return false
+        }
+
+        // if the target is checked, and is not the current item
+        // then select it
+        if (target.checked && target !== this.items[this.selected]) {
+          this.items.forEach(function(button, i) {
+            if (button === target) this._setSelected(i)
+          }.bind(this))
+        }
+      },
+      /**
+      * Event handler triggerd when a key is pressed down.
+      * Processes keyboard navigation for `a11y`.
+      */
+      _onKeyDown: function(e) {
+        if (this.hasAttribute('disabled')) return
+
+        var keyCode = e.keyCode || e.which
+        switch(keyCode) {
+          case KEY_UP:
+          case KEY_LEFT: {
+            e.preventDefault()
+            this.selectPrev()
+            break;
+          }
+          case KEY_DOWN:
+          case KEY_RIGHT: {
+            e.preventDefault()
+            this.selectNext()
+            break;
+          }
+        }
+      },
+      /**
+      * Property observer triggered when the `selected` property is changed.
+      * Applies the roving tabindex strategy, and focuses and checks the selected node.
+      */
+      _onSelectedChanged: function(selected) {
+        var target = this.items[selected]
+
+        this.items.forEach(function(button, i) {
+          if (i !== selected) {
+            button.set('tabindex', '-1')
+            button.set('checked', false)
+          }
+        }, this)
+
+        target.set('tabindex', '0')        
+        target.set('checked', true)
+        if (this._isFocusEnabled && document.activeElement !== target) target.focus()
+        this.fire('selected', null, {bubbles: false, cancelable: false})
+      },
+      /**
+      * Evalutes if a node is eligible for being selected by the group.
+      */
+      _canSelect: function(button) {
+        return !(button.hasAttribute('disabled') || button.hasAttribute('hidden') || button.hasAttribute('aria-hidden'))
+      },
+      /**
+      * Finds initial selected index by looking for eligible child nodes that are checked.
+      */
+      _selectInitial: function() {
+        if (!(this.items && this.items.length > 0)) return
+        // search for any element that can be selected and is currently checked
+        for(var i = 0, len = this.items.length -1; i < len; i++) {
+          var button = this.items[i]
+          if (this._canSelect(button) && button.checked) {
+            this._setSelected(i)
+            return i
+          }          
+        }
+        // if we didn't find an existing checked item, find the next best element
+        this.selectNext()
+      },
+      /**
+      * Select next eligible control in the group.
+      * Hidden and disabled controls are ignored.
+      */
+      selectNext: function() {
+        if (!(this.items && this.items.length > 0)) return
+        var next = (this.selected === void 0) ? 0 : this.selected + 1
+        for (var i = 0, len = this.items.length - 1; i < len; i++) {
+          if (next === this.items.length) next = 0
+          if (this._canSelect(this.items[next])) {
+            this._setSelected(next)
+            return next
+          }
+          next++
+        }
+      },
+      /**
+      * Select the previous eligible control in the group.
+      * Hidden and disabled controls are ignored.
+      */
+      selectPrev: function() {
+        if (!(this.items && this.items.length > 0)) return
+        var prev = (this.selected === void 0) ? 0 : this.selected - 1
+        for (var i = 0, len = this.items.length - 1; i < len; i++) {
+          if (prev < 0) prev = this.items.length - 1
+          if (this._canSelect(this.items[prev])) {
+            this._setSelected(prev)
+            return prev
+          }
+          prev--
+        }
+      }
+    })
+  }())
+  </script>
+</dom-module>
