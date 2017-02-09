@@ -27,6 +27,10 @@
       .radiogroup > * {
         margin: 4px 0;
       }
+      .radiogroup.block {
+        display: flex;
+        flex-direction: column;
+      }
     </style>
   </head>
   <body>
@@ -51,10 +55,10 @@
       <h3>Radio Button Theme</h3>
       <demo-snippet>
         <template is="dom-bind">
-          <div class="radiogroup">
-            <nebula-radio-button value="on" color="teal" size="1rem">Radio Button</nebula-radio-button>
-            <nebula-radio-button value="on" color="darkred" size="1.5rem">Radio Button</nebula-radio-button>
-            <nebula-radio-button value="on" color="darkblue" size="2.0rem">Radio Button</nebula-radio-button>
+          <div class="radiogroup block">
+            <nebula-radio-button value="on" color="teal" size="1.5rem">Radio Button</nebula-radio-button>
+            <nebula-radio-button value="on" color="darkred" size="2.0rem">Radio Button</nebula-radio-button>
+            <nebula-radio-button value="on" color="darkblue" size="2.5rem">Radio Button</nebula-radio-button>
           </div>
         </template>
       </demo-snippet>
